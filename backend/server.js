@@ -3,18 +3,20 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const app = express();
 const port = 5000;
+const dotenv = require('dotenv');  // Import dotenv
+dotenv.config();  // Load environment variables from .env file
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Create a connection to the database
+// Create a connection to the database using environment variables
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '@harsini2415',
-    database: 'employee_management'
+    host: process.env.DB_HOST,  // Use the environment variable
+    user: process.env.DB_USER,  // Use the environment variable
+    password: process.env.DB_PASSWORD,  // Use the environment variable
+    database: process.env.DB_NAME  // Use the environment variable
 });
 
 // Connect to the database
