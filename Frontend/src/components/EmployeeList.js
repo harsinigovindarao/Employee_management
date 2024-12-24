@@ -4,7 +4,7 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/employees')
+    fetch('https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/')
       .then((res) => res.json())
       .then((data) => setEmployees(data));
   }, []);

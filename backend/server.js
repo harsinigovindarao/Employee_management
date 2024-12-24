@@ -7,7 +7,9 @@ const dotenv = require('dotenv');  // Import dotenv
 dotenv.config();  // Load environment variables from .env file
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: 'https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/',
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

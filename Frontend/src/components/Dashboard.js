@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   const viewDatabase = async () => {
     try {
-      const response = await fetch('/api/employees');
+      const response = await fetch('https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/');
       if (!response.ok) {
         throw new Error('Failed to fetch employees');
       }
@@ -27,7 +27,7 @@ const Dashboard = () => {
 
   const deleteEmployee = async (id) => {
     try {
-      const response = await fetch(`/api/employees/${id}`, { method: 'DELETE' });
+      const response = await fetch(`https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/${id}`, { method: 'DELETE' });
       if (response.ok) {
         setEmployees((prevEmployees) =>
           prevEmployees.filter((employee) => employee.id !== id)
