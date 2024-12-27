@@ -23,3 +23,19 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# Ignore node_modules
+node_modules/
+
+# Ignore build files (React build)
+Frontend/build/
+
+# Ignore environment files
+.env
+
+# Ignore IDE and editor specific files
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
+

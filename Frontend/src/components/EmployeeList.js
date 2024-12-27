@@ -4,9 +4,11 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
-    fetch('https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/')
+    // Make sure to fetch from the correct endpoint '/api/employees'
+    fetch('http://localhost:5000/api/employees')
       .then((res) => res.json())
-      .then((data) => setEmployees(data));
+      .then((data) => setEmployees(data))
+      .catch((error) => console.error('Error fetching employees:', error)); // Handle errors
   }, []);
 
   return (
@@ -15,7 +17,7 @@ const EmployeeList = () => {
       <ul>
         {employees.map((employee) => (
           <li key={employee.id}>
-            {employee.name} - {employee.position} - ${employee.salary}
+            {employee.name} - {employee.role} - {employee.department}
           </li>
         ))}
       </ul>

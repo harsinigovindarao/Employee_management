@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EmployeeForm from './EmployeeForm';
 
 const Dashboard = () => {
@@ -7,14 +7,26 @@ const Dashboard = () => {
   const [isDatabaseVisible, setIsDatabaseVisible] = useState(false);
   const [employeeToUpdate, setEmployeeToUpdate] = useState(null); // Track employee to update
 
+  // Fetch employee data when component mounts
+  useEffect(() => {
+    if (isDatabaseVisible) {
+      viewDatabase();
+    }
+  }, [isDatabaseVisible]);
+
   const viewDatabase = async () => {
     try {
-      const response = await fetch('https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/');
+      const response = await fetch('http://localhost:5000/api/employees');
       if (!response.ok) {
         throw new Error('Failed to fetch employees');
       }
       const data = await response.json();
-      setEmployees(data);
+      // Ensure data is in the correct format before setting state
+      if (Array.isArray(data)) {
+        setEmployees(data);
+      } else {
+        setError('Unexpected data format received from server.');
+      }
       setIsDatabaseVisible(true);
     } catch (err) {
       setError('Error connecting to the server. Please try again.');
@@ -27,20 +39,27 @@ const Dashboard = () => {
 
   const deleteEmployee = async (id) => {
     try {
-      const response = await fetch(`https://676b11b56c5eeb40aa80ccf4--employeemanagemen.netlify.app/${id}`, { method: 'DELETE' });
+      const response = await fetch(`http://localhost:5000/api/employees/${id}`, { method: 'DELETE' });
       if (response.ok) {
         setEmployees((prevEmployees) =>
           prevEmployees.filter((employee) => employee.id !== id)
         );
+      } else {
+        setError('Error deleting employee. Please try again.');
       }
     } catch (err) {
       setError('Error deleting employee. Please try again.');
     }
   };
 
+  const handleAddEmployeeSuccess = (newEmployee) => {
+    setEmployees((prevEmployees) => [...prevEmployees, newEmployee]);
+    setIsDatabaseVisible(true); // Refresh employee list
+  };
+
   const handleUpdateSuccess = () => {
     setEmployeeToUpdate(null); // Clear the employee being updated
-    viewDatabase(); // Refresh the data after update
+    setIsDatabaseVisible(true); // Refresh the employee list after update
   };
 
   return (
@@ -51,11 +70,11 @@ const Dashboard = () => {
       <h2>Add New Employee</h2>
       <EmployeeForm
         employeeToUpdate={null} // No employee to update for the "Add New Employee" form
-        onSubmit={viewDatabase} // Reload employees after adding
+        onSubmit={handleAddEmployeeSuccess} // Handle success for adding new employee
       />
 
       {/* Button to View Database */}
-      <button onClick={viewDatabase}>View Database</button>
+      <button onClick={() => setIsDatabaseVisible(true)}>View Database</button>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
@@ -76,21 +95,27 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
-                <tr key={employee.id}>
-                  <td>{employee.name}</td>
-                  <td>{employee.employee_id}</td>
-                  <td>{employee.email}</td>
-                  <td>{employee.phone}</td>
-                  <td>{employee.department}</td>
-                  <td>{employee.date_of_joining}</td>
-                  <td>{employee.role}</td>
-                  <td>
-                    <button onClick={() => updateEmployee(employee)}>Update</button>
-                    <button onClick={() => deleteEmployee(employee.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
+              {employees.map((employee) => {
+                // Ensure employee data is valid before rendering
+                if (employee && employee.name) {
+                  return (
+                    <tr key={employee.id}>
+                      <td>{employee.name}</td>
+                      <td>{employee.employee_id}</td>
+                      <td>{employee.email}</td>
+                      <td>{employee.phone}</td>
+                      <td>{employee.department}</td>
+                      <td>{employee.date_of_joining}</td>
+                      <td>{employee.role}</td>
+                      <td>
+                        <button onClick={() => updateEmployee(employee)}>Update</button>
+                        <button onClick={() => deleteEmployee(employee.id)}>Delete</button>
+                      </td>
+                    </tr>
+                  );
+                }
+                return null; // If employee data is invalid, don't render this row
+              })}
             </tbody>
           </table>
 
@@ -100,8 +125,7 @@ const Dashboard = () => {
               <h2>Update Employee</h2>
               <EmployeeForm
                 employeeToUpdate={employeeToUpdate}
-                onSubmit={viewDatabase} // Reload employees after adding
-                onUpdate={handleUpdateSuccess} // Refresh after updating
+                onSubmit={handleUpdateSuccess} // Refresh after updating
               />
             </div>
           )}
