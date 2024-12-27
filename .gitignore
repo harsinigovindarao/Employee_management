@@ -38,4 +38,5 @@ Frontend/build/
 
 # Ignore logs
 *.log
+.vercel
 
